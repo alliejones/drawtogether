@@ -6,12 +6,16 @@
 var express = require('express')
   , routes = require('./routes')
   , http = require('http')
-  , path = require('path');
+  , path = require('path')
+  , io = require('socket.io')
+  , Client = require('./src/client.js').client;
 
 var app = express();
 
+var clients = {};
+
 // all environments
-app.set('port', process.env.PORT || 3000);
+app.set('port', process.env.PORT || 4000);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
 app.use(express.favicon());
@@ -28,6 +32,29 @@ if ('development' == app.get('env')) {
 
 app.get('/', routes.index);
 
-http.createServer(app).listen(app.get('port'), function(){
+var server = http.createServer(app);
+
+server.listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
+});
+
+io = io.listen(server);
+io.sockets.on('connection', function (socket) {
+  var client = new Client(socket);
+  client.onConnection();
+  client.socket.emit('server:connection', clients);
+  clients[client.id] = client;
+
+  socket.on('login', function (username) {
+    client.onLogin(username);
+  });
+
+  socket.on('message', function (data) {
+    client.onMessage(data);
+  });
+
+  socket.on('disconnect', function () {
+    client.onDisconnect();
+    delete clients[client.id];
+  });
 });

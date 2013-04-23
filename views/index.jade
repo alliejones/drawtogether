@@ -1,5 +1,27 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  .container-fluid
+    .row-fluid
+      .span4
+        .wschat-users
+          h2 Users
+          ul.user_list
+      .span8
+        .wschat-log
+          h2 Chat Log
+          .log
+
+  .wschat-input
+    form.form-inline
+      textarea(rows="2", name="message")
+      input.action-send.btn.btn-primary.btn-large(type="submit", value="Send")
+
+  #modal.modal.hide.fade(data-backdrop="static", data-keyboard="false")
+    .modal-header
+      h3 Log in
+    .modal-body
+      label Username
+      input(type="text", name="username")
+    .modal-footer
+      a.btn.btn-primary.action-login(href="#")

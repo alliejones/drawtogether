@@ -1,8 +1,16 @@
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-}
+.wschat-log .system {
+  color: #999;
+  font-style: italic; }
 
-a {
-  color: #00B7FF;
-}
+.wschat-input {
+  box-sizing: border-box;
+  background: #eee;
+  bottom: 0;
+  height: 10%;
+  padding: 20px;
+  position: fixed;
+  width: 100%; }
+  .wschat-input .form-inline {
+    text-align: center; }
+    .wschat-input .form-inline textarea {
+      width: 50%; }
