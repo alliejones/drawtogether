@@ -1,16 +1,78 @@
-.wschat-log .system {
-  color: #999;
-  font-style: italic; }
+html { height: 100%; }
+body { height: 100%; }
+.chat {
+  bottom: 0;
+  border-top: 1px solid #ccc;
+  height: 350px;
+  position: fixed;
+  width: 100%;
+}
 
-.wschat-input {
+.users, .chat-log, .chat-input, .user-list, .log {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.users, .chat-log {
+  float: left;
+  height: 250px;
+  position: relative;
+}
+
+.users {
+  width: 30%;
+}
+
+.chat-log {
+  width: 70%;
+}
+
+.users h2, .chat-log h2 {
+  background: #fff;
+  margin: 0;
+  position: fixed;
+  padding: .25em .5%;
+  width: 99%;
+}
+
+.user-list, .log {
+  height: 100%;
+  max-height: 100%;
+  overflow: auto;
+  padding: 1em;
+  padding-top: 5em;
+}
+
+.chat-input {
   box-sizing: border-box;
   background: #eee;
-  bottom: 0;
-  height: 10%;
+  clear: both;
+  height: 100px;
   padding: 20px;
-  position: fixed;
-  width: 100%; }
-  .wschat-input .form-inline {
-    text-align: center; }
-    .wschat-input .form-inline textarea {
-      width: 50%; }
+}
+
+
+.chat-input .form-inline {
+  text-align: center;
+}
+
+.chat-input .form-inline textarea {
+  width: 50%;
+}
+
+/* Typography */
+.log .system {
+  color: #999;
+  font-style: italic;
+}
+
+.cf:after {
+  visibility: hidden;
+  display: block;
+  font-size: 0;
+  content: " ";
+  clear: both;
+  height: 0;
+}
+.cf { display: inline-block; }

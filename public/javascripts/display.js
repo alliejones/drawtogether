@@ -1,16 +1,18 @@
 ;(function(scope) {
   var users = [];
-  var $userList = $('.wschat-users .user_list');
+  var $userList = $('.users .wrapper');
   var $modal = $('#modal');
-  var $chatLog = $('.wschat-log .log');
+  scope.$chatLog = $('.chat-log .wrapper');
   var wsChat = new WSChat('ws://'+window.location.host);
 
   $(function() {
     // close socket connection when the page is reloaded or closed
     $(window).on('beforeunload', function() { wsChat.logout(); });
 
-    $modal.on('shown', function() { $('input[name="username"]').focus(); });
-    $modal.modal('show');
+    // $modal.on('shown', function() { $('input[name="username"]').focus(); });
+    // $modal.modal('show');
+    wsChat.login('allie');
+    attachListeners();
 
     $('.action-login').click(logIn);
     $('.action-send').click(sendMessage);
@@ -44,9 +46,14 @@
   }
 
   function displayUserMessage(msg) {
-    console.log(msg);
     var content = msg.content.replace(/\n/g, '<br>');
     $chatLog.append('<p><strong>'+msg.user.username+':</strong> '+content+'</p>');
+    adjustLogPosition();
+  }
+
+  function adjustLogPosition() {
+    var $parent = $chatLog.parent();
+    $parent.scrollTop($chatLog.height() - $parent.height());
   }
 
   function displayLoginMessage(msg) {
@@ -58,9 +65,7 @@
   }
 
   function addUsers(msg) {
-    console.log('addUsers', msg);
     $.each(msg, function (key, obj) {
-      console.log(key,obj);
       users.push(obj);
     });
     renderUsers();
