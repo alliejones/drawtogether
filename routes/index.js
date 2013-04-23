@@ -6,6 +6,6 @@
 exports.index = function(req, res){
   res.render('index', {
     title: 'nodechat!',
-    appPort: req.app.settings.port || ''
+    appPort: req.app.settings.port || 3000
   });
 };
