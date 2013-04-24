@@ -15,7 +15,10 @@
     attachListeners();
 
     $('.action-login').click(logIn);
-    $('.action-send').click(sendMessage);
+    $('.chat-input form').submit(function(e) {
+      sendMessage(e);
+      e.preventDefault();
+    });
   });
 
   function attachListeners() {
@@ -40,9 +43,11 @@
   function sendMessage(e) {
     var textarea = $('textarea[name="message"]');
     var message = textarea.val();
-    wsChat.send($('<div/>').text(message).html()); // escape html
-    textarea.val('').focus();
-    e.preventDefault();
+    if (message !=- '') {
+      wsChat.send($('<div/>').text(message).html()); // escape html
+      textarea.val('').focus();
+      e.preventDefault();
+    }
   }
 
   function displayUserMessage(msg) {
