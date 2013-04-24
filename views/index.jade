@@ -1,6 +1,28 @@
 extends layout
 
 block content
+  #canvas
+    .controls
+      ul.colors.option
+        li.selected(data-color="black")
+        li(data-color="white")
+        li(data-color="red")
+        li(data-color="orange")
+        li(data-color="yellow")
+        li(data-color="green")
+        li(data-color="blue")
+        li(data-color="indigo")
+        li(data-color="violet")
+
+      ul.sizes.option
+        li.selected(data-size="1")
+        li(data-size="5")
+        li(data-size="10")
+        li(data-size="15")
+        li(data-size="20")
+        li(data-size="35")
+        li(data-size="50")
+
   .chat
     .users.cf
       h2 Users

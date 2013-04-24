@@ -23,6 +23,7 @@ var assetManagerGroups = {
           'components/jquery/jquery.min.js',
           'components/bootstrap/js/bootstrap-transition.js',
           'components/bootstrap/js/bootstrap-modal.js',
+          'components/doodler/dist/doodler.js',
           'client/js/wschat.js',
           'client/js/display.js'
         ]
