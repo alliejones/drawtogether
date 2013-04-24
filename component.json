@@ -1,0 +1,14 @@
+{
+  "name": "drawtogether",
+  "version": "0.0.0",
+  "main": "app.js",
+  "dependencies": {
+    "doodler": "git@github.com:alliejones/doodler.git",
+    "jquery": "1.8.3"
+  },
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "components"
+  ]
+}
