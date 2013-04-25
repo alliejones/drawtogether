@@ -7,30 +7,10 @@ var express = require('express'),
     routes = require('./routes'),
     http = require('http'),
     path = require('path'),
-    assetManager = require('connect-assetmanager'),
-    less = require('less-middleware'),
     io = require('socket.io'),
     Client = require('./models/client.js').client;
 
 var app = express();
-
-var assetManagerGroups = {
-    'js': {
-        'route': /\/script\.js/,
-        'path': './',
-        'dataType': 'javascript',
-        'files': [
-          'components/jquery/jquery.min.js',
-          'components/bootstrap/js/bootstrap-transition.js',
-          'components/bootstrap/js/bootstrap-modal.js',
-          'vendor/doodler/dist/doodler.js',
-          // 'client/js/wschat.js',
-          // 'client/js/chat.js',
-          // 'client/js/drawing.js'
-        ]
-    }
-};
-var assetsManagerMiddleware = assetManager(assetManagerGroups);
 
 var clients = {};
 
@@ -43,12 +23,6 @@ app.use(express.logger('dev'));
 app.use(express.bodyParser());
 app.use(express.methodOverride());
 app.use(app.router);
-app.use(assetsManagerMiddleware);
-app.use(less({
-  src: __dirname + '/client/css',
-  dest: __dirname + '/public/',
-  compress: true
-}));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // development only

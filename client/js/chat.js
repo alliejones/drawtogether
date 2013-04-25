@@ -5,12 +5,6 @@
   scope.$chatLog = $('.chat-log .wrapper');
   scope.wsChat = new WSChat('ws://'+window.location.host);
 
-  function User (user) {
-    this.id = user.id;
-    this.username = user.username;
-    this.queue = new Queue(this.id);
-  }
-
   $(function() {
     // close socket connection when the page is reloaded or closed
     $(window).on('beforeunload', function() { wsChat.logout(); });
@@ -31,6 +25,7 @@
     wsChat.on('server:connection', addUsers);
     wsChat.on('local:logout', logout);
     wsChat.on('user:message', displayUserMessage);
+    wsChat.on('user:drawing', addDrawingToQueue);
     wsChat.on('user:login', displayLoginMessage);
     wsChat.on('user:logout', displayLogoutMessage);
     wsChat.on('user:login', addUser);
@@ -67,6 +62,10 @@
     $parent.scrollTop($chatLog.height() - $parent.height());
   }
 
+  function addDrawingToQueue(msg) {
+    canvas.queues[msg.user.id].fromString(msg.content);
+  }
+
   function displayLoginMessage(msg) {
     $chatLog.append('<p class="system">'+msg.user.username+' has logged in.</p>');
   }
@@ -76,14 +75,14 @@
   }
 
   function addUsers(msg) {
-    $.each(msg, function (key, obj) {
-      users[msg.user.id] = new User(msg.user);
+    $.each(msg, function (key, user) {
+      wsChat.addUser(user);
     });
     renderUsers();
   }
 
   function addUser(msg) {
-    users[msg.user.id] = new User(msg.user);
+    wsChat.addUser(msg.user);
     renderUsers();
   }
 

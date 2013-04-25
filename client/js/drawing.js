@@ -28,8 +28,4 @@
     canvas.setStrokeWidth($(this).data('size'));
     $(this).addClass('selected').siblings().removeClass('selected');
   });
-  $('#canvas').on('mouseup', function() {
-    wsChat.send(canvas.queue.toString());
-    canvas.queue.array.length = 0;
-  });
 })(this);
