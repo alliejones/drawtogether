@@ -9853,22 +9853,26 @@ Canvas.prototype.nextTick = function () {
   for (var id in this.queues) {
     var queue = this.queues[id];
     if (!queue.isEmpty()) {
-      this.processCommand(queue.dequeue());
+      this.processCommand(queue.dequeue(), queue.user);
     }
   }
   this.loop = window.setTimeout(this.nextTick.bind(this), 0);
 };
 
-Canvas.prototype.processCommand = function (cmdString) {
+Canvas.prototype.processCommand = function (cmdString, user) {
+  user = user || this.localQueue.user;
   var data = cmdString.toString().split(',');
   if (data.length === 4) {
     // this is a line, draw it
+    this._setStrokeColor(user.strokeColor);
+    this._setStrokeWidth(user.strokeWidth);
     this._line.apply(this, data);
   } else {
     // a single number represents a command
     var cmd = this.cmds[data[0]].slice(0);
-    var func = '_' + cmd.shift();
-    this[func].apply(this, cmd);
+    var func = cmd.shift();
+    this['_'+func].apply(this, cmd);
+    user[func].apply(user, cmd);
   }
 };
 
@@ -9917,7 +9921,7 @@ Canvas.prototype.setStrokeColor = function (color) {
   this.localQueue.queue(this.colors[color]);
 };
 
-Canvas.prototype._setStrokeColor = function (color) {
+Canvas.prototype._setStrokeColor = function (color, user) {
   this.ctx.strokeStyle = color;
 };
 
@@ -9933,7 +9937,7 @@ Canvas.prototype.setStrokeWidth = function (width) {
   this.localQueue.queue(this.widths[width]);
 };
 
-Canvas.prototype._setStrokeWidth = function (width) {
+Canvas.prototype._setStrokeWidth = function (width, user) {
   this.ctx.lineWidth = width;
 };
 
@@ -9999,8 +10003,19 @@ Canvas.prototype.fromString = function (data) {
     this.id = user.id;
     this.username = user.username;
     this.queue = new Queue(this.id);
+    this.queue.user = this;
     this.conn = null;
+    this.strokeColor = '#000';
+    this.strokeWidth = 1;
   }
+
+  User.prototype.setStrokeColor = function (color) {
+    this.strokeColor = color;
+  };
+
+  User.prototype.setStrokeWidth = function (width) {
+    this.strokeWidth = width;
+  };
 
   WSChat.prototype.login = function (username) {
     this.conn = new io.connect(this.url, { reconnect: false });
@@ -10054,10 +10069,8 @@ Canvas.prototype.fromString = function (data) {
     // close socket connection when the page is reloaded or closed
     $(window).on('beforeunload', function() { wsChat.logout(); });
 
-    // $modal.on('shown', function() { $('input[name="username"]').focus(); });
-    // $modal.modal('show');
-    wsChat.login('allie');
-    attachListeners();
+    $modal.on('shown', function() { $('input[name="username"]').focus(); });
+    $modal.modal('show');
 
     $('.action-login').click(logIn);
     $('.chat-input form').submit(function(e) {

@@ -9,10 +9,8 @@
     // close socket connection when the page is reloaded or closed
     $(window).on('beforeunload', function() { wsChat.logout(); });
 
-    // $modal.on('shown', function() { $('input[name="username"]').focus(); });
-    // $modal.modal('show');
-    wsChat.login('allie');
-    attachListeners();
+    $modal.on('shown', function() { $('input[name="username"]').focus(); });
+    $modal.modal('show');
 
     $('.action-login').click(logIn);
     $('.chat-input form').submit(function(e) {

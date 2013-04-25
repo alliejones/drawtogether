@@ -7,7 +7,8 @@ module.exports = function(grunt) {
   ];
 
   var files = [
-    'components/doodler/dist/doodler.js',
+    'client/js/canvas/queue.js',
+    'client/js/canvas/canvas.js',
     'client/js/wschat.js',
     'client/js/chat.js',
     'client/js/drawing.js'

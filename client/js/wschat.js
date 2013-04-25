@@ -11,8 +11,19 @@
     this.id = user.id;
     this.username = user.username;
     this.queue = new Queue(this.id);
+    this.queue.user = this;
     this.conn = null;
+    this.strokeColor = '#000';
+    this.strokeWidth = 1;
   }
+
+  User.prototype.setStrokeColor = function (color) {
+    this.strokeColor = color;
+  };
+
+  User.prototype.setStrokeWidth = function (width) {
+    this.strokeWidth = width;
+  };
 
   WSChat.prototype.login = function (username) {
     this.conn = new io.connect(this.url, { reconnect: false });
