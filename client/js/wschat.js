@@ -51,9 +51,9 @@
   };
 
   WSChat.prototype.addUser = function (userInfo) {
-    if (userInfo.id !== this.user.id) {
       var user = new User(userInfo);
       this.users[user.id] = user;
+    if (userInfo.id !== this.user.id) {
       canvas.registerQueue(user.id, user.queue);
     }
   };

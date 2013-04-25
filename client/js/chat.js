@@ -1,5 +1,5 @@
 ;(function(scope) {
-  var users = {};
+  window.users = {};
   var $userList = $('.users .wrapper');
   var $modal = $('#modal');
   scope.$chatLog = $('.chat-log .wrapper');
@@ -37,6 +37,7 @@
       wsChat.login(username);
       attachListeners();
     }
+    renderUsers();
   }
 
   function sendMessage(e) {
@@ -86,13 +87,7 @@
 
   function removeUser(msg) {
     if (msg.user && msg.user.id) {
-      var removeID = msg.user.id;
-      for (var i = 0, len = users.length; i < len; i++) {
-        if (users[i].id === removeID) {
-          users.splice(i, 1);
-          break;
-        }
-      }
+      delete wsChat.users[msg.user.id];
       renderUsers();
     }
   }
@@ -100,7 +95,7 @@
   function renderUsers() {
     var html = '';
     $userList.empty();
-    $.each(users, function() {
+    $.each(wsChat.users, function() {
       html += "\n<li class='user-"+this.id+"'>"+this.username+"</li>";
     });
     $userList.append(html);
