@@ -22,6 +22,13 @@ Client.prototype.onMessage = function (data) {
   });
 };
 
+Client.prototype.onDrawing = function (data) {
+  this.emit('user:drawing', {
+    content: data,
+    user: this.toJSON()
+  }, false);
+};
+
 Client.prototype.onDisconnect = function () {
   this.logout();
 };
@@ -30,8 +37,13 @@ Client.prototype.toJSON = function () {
   return { id: this.id, username: this.username };
 }
 
-Client.prototype.emit = function(type, args) {
-  this.socket.manager.sockets.in('').emit(type, args);
+Client.prototype.emit = function(type, args, includeSelf) {
+  includeSelf = (typeof includeSelf === 'undefined') ? true : includeSelf;
+  if (includeSelf) {
+    this.socket.manager.sockets.in('').emit(type, args);
+  } else {
+    this.socket.broadcast.emit(type, args);
+  }
 };
 
 exports.client = Client;

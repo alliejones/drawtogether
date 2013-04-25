@@ -1,9 +1,15 @@
 ;(function(scope) {
-  var users = [];
+  var users = {};
   var $userList = $('.users .wrapper');
   var $modal = $('#modal');
   scope.$chatLog = $('.chat-log .wrapper');
-  var wsChat = new WSChat('ws://'+window.location.host);
+  scope.wsChat = new WSChat('ws://'+window.location.host);
+
+  function User (user) {
+    this.id = user.id;
+    this.username = user.username;
+    this.queue = new Queue(this.id);
+  }
 
   $(function() {
     // close socket connection when the page is reloaded or closed
@@ -71,13 +77,13 @@
 
   function addUsers(msg) {
     $.each(msg, function (key, obj) {
-      users.push(obj);
+      users[msg.user.id] = new User(msg.user);
     });
     renderUsers();
   }
 
   function addUser(msg) {
-    users.push(msg.user);
+    users[msg.user.id] = new User(msg.user);
     renderUsers();
   }
 
@@ -107,34 +113,4 @@
     wsChat.emit('local:logout');
     $userList.empty();
   }
-
-  scope.canvas = new Canvas({
-    width: 600,
-    height: 400,
-    id: 'canvas'
-  });
-  $('#clear').on('click', function() { canvas.erase(); canvas.newHistory(); });
-  $('#replay').on('click', function() { canvas.erase(); canvas.replay(); });
-
-  $('.colors li').each(function() {
-    $(this).css('backgroundColor', function() {
-      return $(this).data('color');
-    });
-    canvas.registerStrokeColor($(this).data('color'));
-  }).on('click', function() {
-    canvas.setStrokeColor($(this).data('color'));
-    $(this).addClass('selected').siblings().removeClass('selected');
-  });
-
-  $('.sizes li').each(function() {
-    var size = $(this).data('size');
-    $('<div class="circle"></div>').css({
-      width: size,
-      height: size
-    }).appendTo($(this));
-    canvas.registerStrokeWidth(size);
-  }).on('click', function() {
-    canvas.setStrokeWidth($(this).data('size'));
-    $(this).addClass('selected').siblings().removeClass('selected');
-  });
 })(this);

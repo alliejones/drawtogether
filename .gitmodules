@@ -1,0 +1,3 @@
+[submodule "vendor/doodler"]
+	path = vendor/doodler
+	url = git@github.com:alliejones/doodler.git

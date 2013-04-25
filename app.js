@@ -23,9 +23,10 @@ var assetManagerGroups = {
           'components/jquery/jquery.min.js',
           'components/bootstrap/js/bootstrap-transition.js',
           'components/bootstrap/js/bootstrap-modal.js',
-          'components/doodler/dist/doodler.js',
-          'client/js/wschat.js',
-          'client/js/display.js'
+          'vendor/doodler/dist/doodler.js',
+          // 'client/js/wschat.js',
+          // 'client/js/chat.js',
+          // 'client/js/drawing.js'
         ]
     }
 };
@@ -76,6 +77,10 @@ io.sockets.on('connection', function (socket) {
 
   socket.on('message', function (data) {
     client.onMessage(data);
+  });
+
+  socket.on('drawing', function (data) {
+    client.onDrawing(data);
   });
 
   socket.on('disconnect', function () {
