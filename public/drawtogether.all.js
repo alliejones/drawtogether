@@ -9779,6 +9779,36 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 
 }(window.jQuery);
 
+// http://paulirish.com/2011/requestanimationframe-for-smart-animating/
+// http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
+
+// requestAnimationFrame polyfill by Erik Möller. fixes from Paul Irish and Tino Zijdel
+
+// MIT license
+
+(function() {
+  var lastTime = 0;
+  var vendors = ['ms', 'moz', 'webkit', 'o'];
+  for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+    window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
+    window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame'] || window[vendors[x]+'CancelRequestAnimationFrame'];
+  }
+
+  if (!window.requestAnimationFrame)
+    window.requestAnimationFrame = function(callback, element) {
+      var currTime = new Date().getTime();
+      var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+      var id = window.setTimeout(function() { callback(currTime + timeToCall); },
+        timeToCall);
+      lastTime = currTime + timeToCall;
+      return id;
+    };
+
+  if (!window.cancelAnimationFrame)
+    window.cancelAnimationFrame = function(id) {
+      clearTimeout(id);
+    };
+}());
 function Queue (id, local) {
   this.array = [];
   this.id = id;
@@ -9818,6 +9848,7 @@ function Canvas (settings) {
   this.prevMouseCoords = { x: null, y: null };
   this.mouseCoords = { x: null, y: null };
   this.curMouseCoords = { x: null, y: null };
+  this._dragging = false;
 
   this.el.width = settings.width;
   this.el.height = settings.height;
@@ -9839,9 +9870,10 @@ function Canvas (settings) {
     window.addEventListener('selectstart', function() { return false; });
     window.addEventListener('mousemove', this._onMousemove.bind(this));
     window.addEventListener('mouseup', this._onMouseup.bind(this));
+    window.addEventListener('scroll', this._updateOffset.bind(this));
   }
 
-  this.loop = null;
+  this._updateOffset();
   this.nextTick();
 }
 
@@ -9850,13 +9882,13 @@ Canvas.prototype.registerQueue = function (id, queue) {
 };
 
 Canvas.prototype.nextTick = function () {
+  requestAnimationFrame(this.nextTick.bind(this));
   for (var id in this.queues) {
     var queue = this.queues[id];
     if (!queue.isEmpty()) {
       this.processCommand(queue.dequeue(), queue.user);
     }
   }
-  this.loop = window.setTimeout(this.nextTick.bind(this), 0);
 };
 
 Canvas.prototype.processCommand = function (cmdString, user) {
@@ -9886,12 +9918,21 @@ Canvas.prototype._mapCoords = function (x, y) {
   };
 };
 
-Canvas.prototype._onMousedown = function (e) { this._startDrawing(e); };
-Canvas.prototype._onMouseup = function () { this._stopDrawing(); };
+Canvas.prototype._onMousedown = function (e) {
+  this._dragging = true;
+  this._startDrawing(e);
+};
+Canvas.prototype._onMouseup = function () {
+  this._dragging = false;
+};
 
 Canvas.prototype._onMousemove = function(e) {
-  var scroll = this._windowScrollPosition();
-  this.curMouseCoords = this._mapCoords(e.pageX - scroll.left, e.pageY - scroll.top);
+  this.curMouseCoords = this._mapCoords(e.pageX - this._offset.left, e.pageY - this._offset.top);
+  // console.log(this.curMouseCoords);
+};
+
+Canvas.prototype._updateOffset = function () {
+  this._offset = this._windowScrollPosition();
 };
 
 Canvas.prototype._windowScrollPosition = function() {
@@ -9904,17 +9945,36 @@ Canvas.prototype._windowScrollPosition = function() {
 
 Canvas.prototype._startDrawing = function (e) {
   var coords = this._mapCoords(e.pageX, e.pageY);
-  this.recordingLoop = window.setInterval(this._draw.bind(this), this.recordingInterval);
   this.ctx.moveTo(coords.x, coords.y);
   this.ctx.beginPath();
+  this._draw();
 };
 
 Canvas.prototype._stopDrawing = function () {
   this.ctx.beginPath();
   this.prevMouseCoords = { x: null, y: null };
   this.mouseCoords = { x: null, y: null };
-  window.clearInterval(this.recordingLoop);
-  this.recordingLoop = null;
+};
+
+Canvas.prototype._draw = function() {
+  if (this._dragging) {
+    requestAnimationFrame(this._draw.bind(this));
+  }
+
+  var x1 = this.prevMouseCoords.x = this.mouseCoords.x;
+  var y1 = this.prevMouseCoords.y = this.mouseCoords.y;
+  var x2 = this.mouseCoords.x = this.curMouseCoords.x;
+  var y2 = this.mouseCoords.y = this.curMouseCoords.y;
+  if (x1 === null || y1 === null) {
+    x1 = x2;
+    y1 = y2;
+  }
+  console.log(x1, y1, x2, y2);
+  this.line(x1, y1, x2, y2);
+
+  if (!this._dragging) {
+    this._stopDrawing();
+  }
 };
 
 Canvas.prototype.setStrokeColor = function (color) {
@@ -9947,19 +10007,6 @@ Canvas.prototype.registerStrokeWidth = function(width) {
     // save the cmd index so it can be looked up by width
     this.widths[width] = this.cmds.length - 1;
   }
-};
-
-
-Canvas.prototype._draw = function() {
-  var x1 = this.prevMouseCoords.x = this.mouseCoords.x;
-  var y1 = this.prevMouseCoords.y = this.mouseCoords.y;
-  var x2 = this.mouseCoords.x = this.curMouseCoords.x;
-  var y2 = this.mouseCoords.y = this.curMouseCoords.y;
-  if (x1 === null || y1 === null) {
-    x1 = x2;
-    y1 = y2;
-  }
-  this.line(x1, y1, x2, y2);
 };
 
 Canvas.prototype.line = function (x1, y1, x2, y2) {

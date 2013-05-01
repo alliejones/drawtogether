@@ -7,6 +7,7 @@ module.exports = function(grunt) {
   ];
 
   var files = [
+    'client/js/canvas/requestAnimationFrame.js',
     'client/js/canvas/queue.js',
     'client/js/canvas/canvas.js',
     'client/js/wschat.js',
