@@ -39,6 +39,8 @@ server.listen(app.get('port'), function(){
 });
 
 io = io.listen(server);
+if (app.get('env') !== 'development') { io.set('log level', 1); }
+
 io.sockets.on('connection', function (socket) {
   var client = new Client(socket);
   client.onConnection();
