@@ -1,9 +1,9 @@
 module.exports = function(grunt) {
 
   var libraries = [
-    'components/jquery/jquery.js',
-    'components/bootstrap/js/bootstrap-transition.js',
-    'components/bootstrap/js/bootstrap-modal.js'
+    'bower_components/jquery/jquery.js',
+    'bower_components/bootstrap/js/bootstrap-transition.js',
+    'bower_components/bootstrap/js/bootstrap-modal.js'
   ];
 
   var files = [
